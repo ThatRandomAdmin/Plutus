@@ -1,0 +1,12 @@
+<form class="nav-panel" action="{{ url_for('main.signup') }}" method="post">
+    <label for="nav-name">Full name</label>
+    <input id="nav-name" name="name" type="text" placeholder="Jane Doe" required>
+
+    <label for="nav-signup-email">Email</label>
+    <input id="nav-signup-email" name="email" type="email" placeholder="janedoe@example.com" required>
+
+    <label for="nav-signup-password">Password</label>
+    <input id="nav-signup-password" name="password" type="password" placeholder="Create a password" required>
+
+    <button type="submit">Sign up</button>
+</form>

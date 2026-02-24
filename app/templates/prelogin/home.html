@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <h1>Plutus</h1>
+    <p>This application will help to turn your financial troubles into a thing of the past!</p>
+</section>
+
+<section class="features">
+    <div class="feature-card">
+        <h2>Purpose</h2>
+        <p>I built Plutus to demonstrate my ability to design and develop a simple, functional python web app as a part of my degree apprenticeship.</p>
+    </div>
+
+    <div class="feature-card">
+        <h2>Functionality</h2>
+        <p>The app allows users to upload bank statements and reconcile them with their own self-entered transactions. It also has multiple tiers of accounts, to allow for actions to be blocked based on the users permission level.</p>
+    </div>
+
+    <div class="feature-card">
+        <h2>Warning</h2>
+        <p>This application is a demonstration of my skills and is not intended for use with real data. I cannot stress this enough, please do not upload any real data. I am not responsible for any data loss or issues that may arise from using this application.</p>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,21 @@
+<header>
+    <a class="logo" href="{{ url_for('main.home') }}" aria-label="Home">
+        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Plutus logo">
+    </a>
+
+    <nav>
+        {% if session.get('user_id') %}
+            <a class="nav-trigger" href="{{ url_for('main.logout') }}">Log out</a>
+        {% else %}
+            <!-- Simple hover dropdowns for auth -->
+            <div class="nav-menu">
+                <a class="nav-trigger">Log in</a>
+                {% include "prelogin/login.html" %}
+            </div>
+            <div class="nav-menu">
+                <a class="nav-trigger">Sign up</a>
+                {% include "prelogin/signup.html" %}
+            </div>
+        {% endif %}
+    </nav>
+</header>

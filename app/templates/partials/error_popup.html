@@ -1,0 +1,11 @@
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="error-popup" id="error-popup">
+        {% for category, message in messages %}
+            {% if category == "error" %}
+                <p>{{ message }}</p>
+            {% endif %}
+        {% endfor %}
+    </div>
+    {% endif %}
+{% endwith %}
