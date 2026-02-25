@@ -1,4 +1,5 @@
 from app.models.schema import init_db
+from app.models.transaction_model import add_transaction
 from app.models.user_model import (
     add_user,
     clear_session_token,
@@ -8,6 +9,7 @@ from app.models.user_model import (
 )
 
 __all__ = [
+    "add_transaction",
     "add_user",
     "clear_session_token",
     "get_session_token",

@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}Record Viewer{% endblock %}
+
+{% block content %}
+<section class="transactions-shell">
+    <h1>Record Viewer</h1>
+    <p>Select a database table and browse records page by page.</p>
+
+    <form class="transaction-form" action="{{ url_for('main.record_viewer_page') }}" method="get">
+        <label for="record-table">Database table</label>
+        <select id="record-table" name="table" required>
+            {% for table_name in tables %}
+            <option value="{{ table_name }}" {% if table_name == selected_table %}selected{% endif %}>{{ table_name }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit">Load records</button>
+    </form>
+
+    <section class="transaction-list">
+        <h2>Records</h2>
+        {% if selected_table %}
+            {% if columns and rows %}
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                {% for column in columns %}
+                                <th>{{ column }}</th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for row in rows %}
+                            <tr>
+                                {% for cell in row %}
+                                <td>{{ cell }}</td>
+                                {% endfor %}
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% elif columns %}
+                <p>No records found in this table.</p>
+            {% else %}
+                <p>This table could not be loaded.</p>
+            {% endif %}
+
+            <div class="record-pagination">
+                {% if page > 1 %}
+                <a href="{{ url_for('main.record_viewer_page', table=selected_table, page=page-1) }}">Previous</a>
+                {% else %}
+                <span class="disabled">Previous</span>
+                {% endif %}
+
+                <span>Page {{ page }} of {{ total_pages }} ({{ total_rows }} rows)</span>
+
+                {% if page < total_pages %}
+                <a href="{{ url_for('main.record_viewer_page', table=selected_table, page=page+1) }}">Next</a>
+                {% else %}
+                <span class="disabled">Next</span>
+                {% endif %}
+            </div>
+        {% else %}
+            <p>No tables available.</p>
+        {% endif %}
+    </section>
+</section>
+{% endblock %}
