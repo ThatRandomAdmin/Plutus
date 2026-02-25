@@ -12,6 +12,17 @@ SCHEMA_SQL = [
         session_token TEXT,
         admin BOOLEAN DEFAULT FALSE
     )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS transactions (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        name TEXT NOT NULL,
+        transaction_date DATE NOT NULL,
+        amount NUMERIC(12,2) NOT NULL,
+        transaction_type TEXT NOT NULL,
+        transaction_genre TEXT NOT NULL
+    )
     """
 ]
 
