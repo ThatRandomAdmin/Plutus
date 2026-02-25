@@ -4,6 +4,11 @@ bp = Blueprint("errors", __name__)
 MOBILE_TOKENS = ("mobile", "android", "iphone", "ipad", "ipod", "webos", "blackberry")
 
 
+@bp.app_errorhandler(400)
+def bad_request(_error):
+    return render_template("errors/400.html"), 400
+
+
 @bp.app_errorhandler(401)
 def unauthorised(_error):
     return render_template("errors/401.html"), 401
@@ -14,9 +19,19 @@ def not_found(_error):
     return render_template("errors/404.html"), 404
 
 
+@bp.app_errorhandler(405)
+def method_not_allowed(_error):
+    return render_template("errors/405.html"), 405
+
+
 @bp.app_errorhandler(500)
 def internal_server_error(_error):
     return render_template("errors/500.html"), 500
+
+
+@bp.app_errorhandler(502)
+def bad_gateway(_error):
+    return render_template("errors/502.html"), 502
 
 
 @bp.app_errorhandler(503)
