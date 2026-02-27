@@ -3,6 +3,7 @@ from flask import Blueprint, render_template
 from app.controllers import (
     app_page_controller,
     auth_controller,
+    bank_import_controller,
     home_controller,
     record_viewer_controller,
     transaction_controller,
@@ -44,6 +45,31 @@ def transactions_page():
 @bp.route("/transactions", methods=["POST"])
 def create_transaction():
     return transaction_controller.create_transaction()
+
+
+@bp.route("/bank-import")
+def bank_import_page():
+    return bank_import_controller.bank_import_page()
+
+
+@bp.route("/bank-import/formats", methods=["POST"])
+def create_bank_file_format():
+    return bank_import_controller.create_bank_file_format()
+
+
+@bp.route("/bank-import/formats/<int:format_id>/update", methods=["POST"])
+def update_bank_file_format(format_id):
+    return bank_import_controller.update_bank_file_format(format_id)
+
+
+@bp.route("/bank-import/formats/<int:format_id>/delete", methods=["POST"])
+def delete_bank_file_format(format_id):
+    return bank_import_controller.delete_bank_file_format(format_id)
+
+
+@bp.route("/bank-import/upload", methods=["POST"])
+def upload_bank_file():
+    return bank_import_controller.upload_bank_file()
 
 
 @bp.route("/record-viewer")

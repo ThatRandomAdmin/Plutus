@@ -23,6 +23,33 @@ SCHEMA_SQL = [
         transaction_type TEXT NOT NULL,
         transaction_genre TEXT NOT NULL
     )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS bank_file_formats (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        format_name TEXT NOT NULL,
+        delimiter TEXT NOT NULL,
+        date_format TEXT NOT NULL,
+        data_start_row INTEGER NOT NULL,
+        date_column INTEGER NOT NULL,
+        name_column INTEGER NOT NULL,
+        amount_column INTEGER,
+        debit_amount_column INTEGER,
+        credit_amount_column INTEGER,
+        transaction_type_column INTEGER
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS "bankTransactions" (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        bank_file_format_id INTEGER NOT NULL REFERENCES bank_file_formats(id) ON DELETE RESTRICT,
+        name TEXT NOT NULL,
+        transaction_date DATE NOT NULL,
+        amount NUMERIC(12,2) NOT NULL,
+        transaction_type TEXT NOT NULL
+    )
     """
 ]
 
