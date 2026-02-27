@@ -7,8 +7,6 @@ from app.messages import INVALID_TRANSACTION, MISSING_FIELDS
 from app.models import add_transaction
 from app.services import session_service
 
-VALID_TRANSACTION_TYPES = {"debit", "credit"}
-
 
 def transactions_page():
     if not session_service.is_logged_in():
@@ -26,16 +24,10 @@ def create_transaction():
     name = request.form.get("name", "").strip()
     transaction_date_raw = request.form.get("date", "").strip()
     amount_raw = request.form.get("amount", "").strip()
-    transaction_type = request.form.get("transaction_type", "").strip().lower()
+    transaction_type_raw = request.form.get("transaction_type", "").strip()
     transaction_genre = request.form.get("genre", "").strip().lower()
 
-    if (
-        not name
-        or not transaction_date_raw
-        or not amount_raw
-        or not transaction_type
-        or not transaction_genre
-    ):
+    if not all([name, transaction_date_raw, amount_raw, transaction_type_raw, transaction_genre]):
         flash(MISSING_FIELDS, "error")
         return redirect(url_for("main.transactions_page"))
 
@@ -46,12 +38,14 @@ def create_transaction():
         flash(INVALID_TRANSACTION, "error")
         return redirect(url_for("main.transactions_page"))
 
-    if amount <= 0 or transaction_type not in VALID_TRANSACTION_TYPES:
+    transaction_type = {"debit": "Debit", "credit": "Credit"}.get(transaction_type_raw.lower())
+
+    if amount <= 0 or transaction_type is None:
         flash(INVALID_TRANSACTION, "error")
         return redirect(url_for("main.transactions_page"))
 
     user_id = session.get("user_id")
-    new_transaction_id = add_transaction(
+    created_transaction_id = add_transaction(
         user_id,
         name,
         transaction_date,
@@ -59,7 +53,8 @@ def create_transaction():
         transaction_type,
         transaction_genre,
     )
-    if new_transaction_id is None:
+    if created_transaction_id is None:
         flash(INVALID_TRANSACTION, "error")
+        return redirect(url_for("main.transactions_page"))
 
     return redirect(url_for("main.transactions_page"))

@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+
+{% block title %}Bank Import | Plutus{% endblock %}
+
+{% block content %}
+{% macro bank_format_fields(format_item=None) %}
+    {% set suffix = "-" ~ format_item.id if format_item else "" %}
+    <label for="format-name{{ suffix }}">Format name</label>
+    <input id="format-name{{ suffix }}" name="format_name" type="text" value="{{ format_item.format_name if format_item else '' }}" placeholder="NatWest Statement Format" required>
+
+    <label for="delimiter{{ suffix }}">Delimiter</label>
+    <input id="delimiter{{ suffix }}" name="delimiter" type="text" maxlength="1" value="{{ format_item.delimiter if format_item else ',' }}" required>
+
+    <label for="date-format{{ suffix }}">Date format</label>
+    <input id="date-format{{ suffix }}" name="date_format" type="text" value="{{ format_item.date_format if format_item else '' }}" placeholder="%d %b %Y" required>
+
+    <label for="data-start-row{{ suffix }}">Data starts at row number</label>
+    <input id="data-start-row{{ suffix }}" name="data_start_row" type="number" min="1" value="{{ format_item.data_start_row if format_item else '' }}" placeholder="6" required>
+
+    <label for="date-column{{ suffix }}">Date column number</label>
+    <input id="date-column{{ suffix }}" name="date_column" type="number" min="1" value="{{ format_item.date_column if format_item else '' }}" placeholder="1" required>
+
+    <label for="name-column{{ suffix }}">Name/description column number</label>
+    <input id="name-column{{ suffix }}" name="name_column" type="number" min="1" value="{{ format_item.name_column if format_item else '' }}" placeholder="3" required>
+
+    <label for="amount-column{{ suffix }}">Amount column number (optional)</label>
+    <input id="amount-column{{ suffix }}" name="amount_column" type="number" min="1" value="{{ (format_item.amount_column or '') if format_item else '' }}" placeholder="Leave blank if using paid in/out columns">
+
+    <label for="debit-amount-column{{ suffix }}">Debit amount column number (optional)</label>
+    <input id="debit-amount-column{{ suffix }}" name="debit_amount_column" type="number" min="1" value="{{ (format_item.debit_amount_column or '') if format_item else '' }}" placeholder="4">
+
+    <label for="credit-amount-column{{ suffix }}">Credit amount column number (optional)</label>
+    <input id="credit-amount-column{{ suffix }}" name="credit_amount_column" type="number" min="1" value="{{ (format_item.credit_amount_column or '') if format_item else '' }}" placeholder="5">
+
+    <label for="transaction-type-column{{ suffix }}">Transaction type column number (optional)</label>
+    <input id="transaction-type-column{{ suffix }}" name="transaction_type_column" type="number" min="1" value="{{ (format_item.transaction_type_column or '') if format_item else '' }}" placeholder="2 (must contain Debit/Credit)">
+{% endmacro %}
+
+<section class="transactions-shell" data-active-tab="{{ active_tab }}">
+    <h1>Bank Import</h1>
+    <p>Upload a bank CSV file or create a new bank file format template.</p>
+
+    <div class="bank-tabs" role="tablist" aria-label="Bank import tabs">
+        <button
+            id="upload-tab-button"
+            class="bank-tab-button{% if active_tab == 'upload-tab-panel' %} is-active{% endif %}"
+            type="button"
+            data-tab="upload-tab-panel"
+        >
+            Upload CSV
+        </button>
+        <button
+            id="format-tab-button"
+            class="bank-tab-button{% if active_tab == 'format-tab-panel' %} is-active{% endif %}"
+            type="button"
+            data-tab="format-tab-panel"
+        >
+            Build format
+        </button>
+        <button
+            id="manage-tab-button"
+            class="bank-tab-button{% if active_tab == 'manage-tab-panel' %} is-active{% endif %}"
+            type="button"
+            data-tab="manage-tab-panel"
+        >
+            Manage formats
+        </button>
+    </div>
+
+    <section id="upload-tab-panel" class="bank-tab-panel{% if active_tab == 'upload-tab-panel' %} is-active{% endif %}">
+        <form class="transaction-form" action="{{ url_for('main.upload_bank_file') }}" method="post" enctype="multipart/form-data">
+            <label for="bank-file-format-id">Bank file format</label>
+            <select id="bank-file-format-id" name="bank_file_format_id" required {% if not formats %}disabled{% endif %}>
+                <option value="" disabled selected>Select a saved format</option>
+                {% for format_item in formats %}
+                <option value="{{ format_item.id }}">{{ format_item.format_name }}</option>
+                {% endfor %}
+            </select>
+
+            {% if not formats %}
+            <p>Create a bank file format first in the Build format tab.</p>
+            {% endif %}
+
+            <label for="bank-csv">CSV file</label>
+            <input id="bank-csv" name="bank_csv" type="file" accept=".csv,text/csv" required {% if not formats %}disabled{% endif %}>
+
+            <button type="submit" {% if not formats %}disabled{% endif %}>Import bank CSV</button>
+        </form>
+    </section>
+
+    <section id="format-tab-panel" class="bank-tab-panel{% if active_tab == 'format-tab-panel' %} is-active{% endif %}">
+        <form class="transaction-form" action="{{ url_for('main.create_bank_file_format') }}" method="post">
+            {{ bank_format_fields() }}
+
+            <button type="submit">Save bank file format</button>
+        </form>
+    </section>
+
+    <section id="manage-tab-panel" class="bank-tab-panel{% if active_tab == 'manage-tab-panel' %} is-active{% endif %}">
+        <section class="transaction-list">
+            <h2>Manage saved bank file formats</h2>
+            {% if formats %}
+                {% for format_item in manage_formats %}
+                <details class="bank-format-item">
+                    <summary>{{ format_item.format_name }}</summary>
+
+                    <form class="transaction-form bank-manage-form" action="{{ url_for('main.update_bank_file_format', format_id=format_item.id) }}" method="post">
+                        <input type="hidden" name="manage_page" value="{{ manage_page }}">
+                        {{ bank_format_fields(format_item) }}
+
+                        <button type="submit">Save changes</button>
+                    </form>
+
+                    <form class="bank-delete-form" action="{{ url_for('main.delete_bank_file_format', format_id=format_item.id) }}" method="post">
+                        <input type="hidden" name="manage_page" value="{{ manage_page }}">
+                        <button type="submit">Delete format</button>
+                    </form>
+                </details>
+                {% endfor %}
+
+                {% if total_manage_pages > 1 %}
+                <div class="record-pagination">
+                    {% if manage_page > 1 %}
+                    <a href="{{ url_for('main.bank_import_page', tab='manage-tab-panel', manage_page=manage_page-1) }}">Previous</a>
+                    {% else %}
+                    <span class="disabled">Previous</span>
+                    {% endif %}
+
+                    <span>Page {{ manage_page }} of {{ total_manage_pages }}</span>
+
+                    {% if manage_page < total_manage_pages %}
+                    <a href="{{ url_for('main.bank_import_page', tab='manage-tab-panel', manage_page=manage_page+1) }}">Next</a>
+                    {% else %}
+                    <span class="disabled">Next</span>
+                    {% endif %}
+                </div>
+                {% endif %}
+            {% else %}
+            <p>No formats have been created yet.</p>
+            {% endif %}
+        </section>
+    </section>
+</section>
+<script src="{{ url_for('static', filename='js/bank-import-tabs.js') }}"></script>
+{% endblock %}

@@ -6,6 +6,7 @@
     <nav>
         {% if session.get('user_id') %}
             <a class="nav-trigger" href="{{ url_for('main.transactions_page') }}">Transactions</a>
+            <a class="nav-trigger" href="{{ url_for('main.bank_import_page') }}">Bank Import</a>
             <a class="nav-trigger" href="{{ url_for('main.record_viewer_page') }}">Record Viewer</a>
             <a class="nav-trigger" href="{{ url_for('main.logout') }}">Log out</a>
         {% else %}

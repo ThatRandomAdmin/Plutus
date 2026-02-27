@@ -5,7 +5,7 @@
 {% block content %}
 <section class="transactions-shell">
     <h1>Transactions</h1>
-    <p>Add receipts, paychecks, and other account activity.</p>
+    <p>Add receipts, pay cheques, and other account activity.</p>
 
     <form class="transaction-form" action="{{ url_for('main.create_transaction') }}" method="post">
         <label for="transaction-name">Name</label>
@@ -20,8 +20,8 @@
         <label for="transaction-type">Transaction type</label>
         <select id="transaction-type" name="transaction_type" required>
             <option value="" disabled selected>Select debit or credit</option>
-            <option value="debit">Debit</option>
-            <option value="credit">Credit</option>
+            <option value="Debit">Debit</option>
+            <option value="Credit">Credit</option>
         </select>
 
         <label for="transaction-genre">Genre</label>

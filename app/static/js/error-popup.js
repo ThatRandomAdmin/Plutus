@@ -1,15 +1,10 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const errorPopup = document.getElementById("error-popup");
-    if (!errorPopup) {
-        return;
-    }
-
-    const text = errorPopup.textContent || "";
-    if (!text.trim()) {
+    const popupWrap = document.querySelector(".flash-popup-wrap");
+    if (!popupWrap) {
         return;
     }
 
     setTimeout(() => {
-        errorPopup.remove();
+        popupWrap.remove();
     }, 5000);
 });
