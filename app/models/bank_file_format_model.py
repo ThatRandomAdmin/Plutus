@@ -33,7 +33,7 @@ def add_bank_file_format(
     try:
         cursor = execute(
             """
-            INSERT INTO bank_file_formats (
+            INSERT INTO "bankFileFormats" (
                 user_id,
                 format_name,
                 delimiter,
@@ -76,7 +76,7 @@ def get_bank_file_formats_for_user(user_id):
             f"""
             SELECT
 {BANK_FILE_FORMAT_SELECT_COLUMNS}
-            FROM bank_file_formats
+            FROM "bankFileFormats"
             WHERE user_id = %s
             ORDER BY format_name ASC, id ASC
             """,
@@ -92,7 +92,7 @@ def get_bank_file_format_by_id(user_id, bank_file_format_id):
             f"""
             SELECT
 {BANK_FILE_FORMAT_SELECT_COLUMNS}
-            FROM bank_file_formats
+            FROM "bankFileFormats"
             WHERE user_id = %s AND id = %s
             """,
             (user_id, bank_file_format_id),
@@ -118,7 +118,7 @@ def update_bank_file_format(
     try:
         cursor = execute(
             """
-            UPDATE bank_file_formats
+            UPDATE "bankFileFormats"
             SET
                 format_name = %s,
                 delimiter = %s,
@@ -159,7 +159,7 @@ def delete_bank_file_format(user_id, bank_file_format_id):
     try:
         cursor = execute(
             """
-            DELETE FROM bank_file_formats
+            DELETE FROM "bankFileFormats"
             WHERE user_id = %s AND id = %s
             RETURNING id
             """,

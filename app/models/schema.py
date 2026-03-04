@@ -25,7 +25,7 @@ SCHEMA_SQL = [
     )
     """,
     """
-    CREATE TABLE IF NOT EXISTS bank_file_formats (
+    CREATE TABLE IF NOT EXISTS "bankFileFormats" (
         id SERIAL PRIMARY KEY,
         user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
         format_name TEXT NOT NULL,
@@ -41,10 +41,18 @@ SCHEMA_SQL = [
     )
     """,
     """
-    CREATE TABLE IF NOT EXISTS "bankTransactions" (
+    CREATE TABLE IF NOT EXISTS statements (
         id SERIAL PRIMARY KEY,
         user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-        bank_file_format_id INTEGER NOT NULL REFERENCES bank_file_formats(id) ON DELETE RESTRICT,
+        bank_file_format_id INTEGER NOT NULL REFERENCES "bankFileFormats"(id) ON DELETE RESTRICT,
+        name TEXT NOT NULL,
+        imported_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS "bankTransactions" (
+        id SERIAL PRIMARY KEY,
+        statement_id INTEGER NOT NULL REFERENCES statements(id) ON DELETE CASCADE,
         name TEXT NOT NULL,
         transaction_date DATE NOT NULL,
         amount NUMERIC(12,2) NOT NULL,

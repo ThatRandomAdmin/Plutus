@@ -7,6 +7,7 @@ from app.models.bank_file_format_model import (
 )
 from app.models.bank_transaction_model import add_bank_transaction
 from app.models.schema import init_db
+from app.models.statement_model import add_statement
 from app.models.transaction_model import add_transaction
 from app.models.user_model import (
     add_user,
@@ -18,6 +19,7 @@ from app.models.user_model import (
 
 __all__ = [
     "add_bank_file_format",
+    "add_statement",
     "add_bank_transaction",
     "add_transaction",
     "add_user",

@@ -8,6 +8,7 @@ from flask import flash, redirect, render_template, request, session, url_for
 
 from app.models import (
     add_bank_file_format,
+    add_statement,
     add_bank_transaction,
     delete_bank_file_format as delete_bank_file_format_model,
     get_bank_file_format_by_id,
@@ -143,7 +144,7 @@ def delete_bank_file_format(format_id):
 
     if deleted_id is None:
         flash(
-            "Could not delete bank file format. It may be in use by bank transactions.",
+            "Could not delete bank file format. It may be in use by imported statements.",
             "error",
         )
     else:
@@ -186,6 +187,11 @@ def upload_bank_file():
     csv_text = file_bytes.decode("utf-8-sig", errors="replace")
 
     selected_format = dict(zip(BANK_FILE_FORMAT_KEYS, selected_format_row))
+    statement_id = add_statement(user_id, format_id, uploaded_file.filename)
+    if statement_id is None:
+        flash("Could not save statement.", "error")
+        return _redirect_to_bank_import_tab("upload-tab-panel")
+
     reader = csv.reader(io.StringIO(csv_text), delimiter=selected_format["delimiter"])
     rows_added = 0
 
@@ -199,8 +205,7 @@ def upload_bank_file():
 
         name, transaction_date, amount_value, transaction_type = parsed_transaction
         created_bank_transaction_id = add_bank_transaction(
-            user_id,
-            format_id,
+            statement_id,
             name,
             transaction_date,
             amount_value,
