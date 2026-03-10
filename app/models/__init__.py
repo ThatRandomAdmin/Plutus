@@ -12,9 +12,12 @@ from app.models.transaction_model import add_transaction
 from app.models.user_model import (
     add_user,
     clear_session_token,
+    create_invite_link,
+    get_invite_link,
     get_session_token,
     get_user_by_email,
     set_session_token,
+    use_invite_link,
 )
 
 __all__ = [
@@ -24,12 +27,15 @@ __all__ = [
     "add_transaction",
     "add_user",
     "clear_session_token",
+    "create_invite_link",
     "delete_bank_file_format",
     "get_bank_file_format_by_id",
     "get_bank_file_formats_for_user",
+    "get_invite_link",
     "get_session_token",
     "get_user_by_email",
     "init_db",
     "set_session_token",
     "update_bank_file_format",
+    "use_invite_link",
 ]

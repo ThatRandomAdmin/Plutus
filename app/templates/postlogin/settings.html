@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}Settings | Plutus{% endblock %}
+
+{% block content %}
+<section class="transactions-shell">
+    <h1>Settings</h1>
+    <p>Generate a one-time invite link for your group.</p>
+
+    <form class="transaction-form" action="{{ url_for('main.generate_invite_link') }}" method="post">
+        <label for="group-code">Group code</label>
+        <input id="group-code" type="text" value="{{ session.get('group_code', '') }}" readonly>
+        <button type="submit">Generate invite link</button>
+    </form>
+
+    {% if invite_link %}
+    <div class="transaction-form">
+        <label for="invite-link">Invite link</label>
+        <input id="invite-link" type="text" value="{{ invite_link }}" readonly>
+        <p>This link can only be used once.</p>
+    </div>
+    {% endif %}
+</section>
+{% endblock %}

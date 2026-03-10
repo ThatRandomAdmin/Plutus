@@ -32,6 +32,26 @@ def logout():
     return auth_controller.logout()
 
 
+@bp.route("/settings")
+def settings_page():
+    return auth_controller.settings_page()
+
+
+@bp.route("/settings/invite", methods=["POST"])
+def generate_invite_link():
+    return auth_controller.generate_invite_link()
+
+
+@bp.route("/invite/<token>")
+def invite_signup_page(token):
+    return auth_controller.invite_signup_page(token)
+
+
+@bp.route("/invite/<token>/signup", methods=["POST"])
+def invite_signup(token):
+    return auth_controller.invite_signup(token)
+
+
 @bp.route("/app")
 def app_page():
     return app_page_controller.app_page()

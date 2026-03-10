@@ -10,7 +10,20 @@ SCHEMA_SQL = [
         email TEXT NOT NULL UNIQUE,
         password TEXT NOT NULL,
         session_token TEXT,
-        admin BOOLEAN DEFAULT FALSE
+        admin BOOLEAN NOT NULL DEFAULT FALSE,
+        group_code TEXT NOT NULL
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS "groupInvites" (
+        id SERIAL PRIMARY KEY,
+        admin_user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        group_code TEXT NOT NULL,
+        invite_token TEXT NOT NULL UNIQUE,
+        used BOOLEAN NOT NULL DEFAULT FALSE,
+        used_by_user_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+        used_at TIMESTAMP,
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
     )
     """,
     """

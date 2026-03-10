@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Invite Sign Up | Plutus{% endblock %}
+
+{% block content %}
+<section class="transactions-shell">
+    <h1>Create account</h1>
+    <p>This account will join the inviter's group.</p>
+
+    <form class="transaction-form" action="{{ url_for('main.invite_signup', token=token) }}" method="post">
+        <label for="invite-name">Full name</label>
+        <input id="invite-name" name="name" type="text" placeholder="Jane Doe" required>
+
+        <label for="invite-email">Email</label>
+        <input id="invite-email" name="email" type="email" placeholder="janedoe@example.com" required>
+
+        <label for="invite-password">Password</label>
+        <input id="invite-password" name="password" type="password" placeholder="Create a password" required>
+
+        <button type="submit">Create account</button>
+    </form>
+</section>
+{% endblock %}
