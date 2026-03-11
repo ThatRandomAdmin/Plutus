@@ -45,8 +45,10 @@ def create_transaction():
         return redirect(url_for("main.transactions_page"))
 
     user_id = session.get("user_id")
+    group_code = session.get("group_code", "")
     created_transaction_id = add_transaction(
         user_id,
+        group_code,
         name,
         transaction_date,
         amount,

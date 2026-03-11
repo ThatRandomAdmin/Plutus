@@ -12,7 +12,7 @@ from app.models import (
     add_bank_transaction,
     delete_bank_file_format as delete_bank_file_format_model,
     get_bank_file_format_by_id,
-    get_bank_file_formats_for_user,
+    get_bank_file_formats_for_group,
     update_bank_file_format as update_bank_file_format_model,
 )
 from app.services import session_service
@@ -31,7 +31,8 @@ def bank_import_page():
     if user_id is None:
         return redirect(url_for("main.home"))
 
-    format_db_rows = get_bank_file_formats_for_user(user_id)
+    group_code = session.get("group_code", "")
+    format_db_rows = get_bank_file_formats_for_group(group_code)
     formats = [dict(zip(BANK_FILE_FORMAT_KEYS, row)) for row in format_db_rows]
 
     manage_page_raw = request.args.get("manage_page", "").strip()
@@ -65,6 +66,7 @@ def create_bank_file_format():
     user_id = _get_logged_in_user_id()
     if user_id is None:
         return redirect(url_for("main.home"))
+    group_code = session.get("group_code", "")
 
     file_format_data = _read_bank_file_format_data(request.form)
     validation_error = _validate_bank_file_format_data(file_format_data)
@@ -74,6 +76,7 @@ def create_bank_file_format():
 
     format_id = add_bank_file_format(
         user_id,
+        group_code,
         file_format_data["format_name"],
         file_format_data["delimiter"],
         file_format_data["date_format"],
@@ -99,8 +102,9 @@ def update_bank_file_format(format_id):
     user_id = _get_logged_in_user_id()
     if user_id is None:
         return redirect(url_for("main.home"))
+    group_code = session.get("group_code", "")
 
-    existing_format_row = get_bank_file_format_by_id(user_id, format_id)
+    existing_format_row = get_bank_file_format_by_id(group_code, format_id)
     if existing_format_row is None:
         flash("Bank file format was not found.", "error")
         return _redirect_to_bank_import_tab("manage-tab-panel", manage_page=manage_page)
@@ -112,7 +116,7 @@ def update_bank_file_format(format_id):
         return _redirect_to_bank_import_tab("manage-tab-panel", manage_page=manage_page)
 
     updated_id = update_bank_file_format_model(
-        user_id,
+        group_code,
         format_id,
         file_format_data["format_name"],
         file_format_data["delimiter"],
@@ -139,8 +143,9 @@ def delete_bank_file_format(format_id):
     user_id = _get_logged_in_user_id()
     if user_id is None:
         return redirect(url_for("main.home"))
+    group_code = session.get("group_code", "")
 
-    deleted_id = delete_bank_file_format_model(user_id, format_id)
+    deleted_id = delete_bank_file_format_model(group_code, format_id)
 
     if deleted_id is None:
         flash(
@@ -157,6 +162,7 @@ def upload_bank_file():
     user_id = _get_logged_in_user_id()
     if user_id is None:
         return redirect(url_for("main.home"))
+    group_code = session.get("group_code", "")
 
     format_id_raw = request.form.get("bank_file_format_id", "").strip()
     format_id = _parse_positive_int(format_id_raw)
@@ -165,7 +171,7 @@ def upload_bank_file():
         flash("Please select a bank file format.", "error")
         return _redirect_to_bank_import_tab("upload-tab-panel")
 
-    selected_format_row = get_bank_file_format_by_id(user_id, format_id)
+    selected_format_row = get_bank_file_format_by_id(group_code, format_id)
     if selected_format_row is None:
         flash("Selected bank file format was not found.", "error")
         return _redirect_to_bank_import_tab("upload-tab-panel")
@@ -187,7 +193,7 @@ def upload_bank_file():
     csv_text = file_bytes.decode("utf-8-sig", errors="replace")
 
     selected_format = dict(zip(BANK_FILE_FORMAT_KEYS, selected_format_row))
-    statement_id = add_statement(user_id, format_id, uploaded_file.filename)
+    statement_id = add_statement(user_id, format_id, group_code, uploaded_file.filename)
     if statement_id is None:
         flash("Could not save statement.", "error")
         return _redirect_to_bank_import_tab("upload-tab-panel")
@@ -206,6 +212,7 @@ def upload_bank_file():
         name, transaction_date, amount_value, transaction_type = parsed_transaction
         created_bank_transaction_id = add_bank_transaction(
             statement_id,
+            group_code,
             name,
             transaction_date,
             amount_value,

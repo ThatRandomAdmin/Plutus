@@ -2,7 +2,7 @@ from app.models.bank_file_format_model import (
     add_bank_file_format,
     delete_bank_file_format,
     get_bank_file_format_by_id,
-    get_bank_file_formats_for_user,
+    get_bank_file_formats_for_group,
     update_bank_file_format,
 )
 from app.models.bank_transaction_model import add_bank_transaction
@@ -30,7 +30,7 @@ __all__ = [
     "create_invite_link",
     "delete_bank_file_format",
     "get_bank_file_format_by_id",
-    "get_bank_file_formats_for_user",
+    "get_bank_file_formats_for_group",
     "get_invite_link",
     "get_session_token",
     "get_user_by_email",

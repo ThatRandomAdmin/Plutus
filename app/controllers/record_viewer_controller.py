@@ -11,6 +11,7 @@ def record_viewer_page():
     if not session_service.is_logged_in():
         session.clear()
         return redirect(url_for("main.home"))
+    group_code = session.get("group_code", "")
 
     try:
         table_rows = execute(
@@ -53,18 +54,18 @@ def record_viewer_page():
             columns = [row[0] for row in column_rows]
 
             if columns:
-                count_query = sql.SQL("SELECT COUNT(*) FROM {}").format(
-                    sql.Identifier(selected_table)
-                )
-                total_rows = execute(count_query).fetchone()[0]
+                count_query = sql.SQL(
+                    "SELECT COUNT(*) FROM {} WHERE group_code = %s"
+                ).format(sql.Identifier(selected_table))
+                total_rows = execute(count_query, (group_code,)).fetchone()[0]
                 total_pages = max(1, (total_rows + PAGE_SIZE - 1) // PAGE_SIZE)
                 page = max(1, min(page, total_pages))
                 offset = (page - 1) * PAGE_SIZE
 
-                data_query = sql.SQL("SELECT * FROM {} LIMIT %s OFFSET %s").format(
-                    sql.Identifier(selected_table)
-                )
-                rows = execute(data_query, (PAGE_SIZE, offset)).fetchall() or []
+                data_query = sql.SQL(
+                    "SELECT * FROM {} WHERE group_code = %s LIMIT %s OFFSET %s"
+                ).format(sql.Identifier(selected_table))
+                rows = execute(data_query, (group_code, PAGE_SIZE, offset)).fetchall() or []
         except Error:
             columns = []
             rows = []

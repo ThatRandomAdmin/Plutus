@@ -5,6 +5,7 @@ from app.models.db import execute
 
 def add_bank_transaction(
     statement_id,
+    group_code,
     name,
     transaction_date,
     amount,
@@ -15,16 +16,18 @@ def add_bank_transaction(
             """
             INSERT INTO "bankTransactions" (
                 statement_id,
+                group_code,
                 name,
                 transaction_date,
                 amount,
                 transaction_type
             )
-            VALUES (%s, %s, %s, %s, %s)
+            VALUES (%s, %s, %s, %s, %s, %s)
             RETURNING id
             """,
             (
                 statement_id,
+                group_code,
                 name,
                 transaction_date,
                 amount,
