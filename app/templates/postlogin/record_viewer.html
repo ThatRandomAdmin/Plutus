@@ -28,14 +28,33 @@
                                 {% for column in columns %}
                                 <th>{{ column }}</th>
                                 {% endfor %}
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for row in rows %}
+                            {% set row_loop = loop %}
                             <tr>
-                                {% for cell in row %}
-                                <td>{{ cell }}</td>
+                                {% for column in columns %}
+                                <td>
+                                    {% if column in editable_columns %}
+                                        <input form="row-form-{{ row_loop.index0 }}-{{ row['id'] }}" type="text" name="{{ column }}"{% if row[column] is not none %} value="{{ row[column] }}"{% endif %}>
+                                    {% else %}
+                                        {{ row[column] if row[column] is not none else "" }}
+                                    {% endif %}
+                                </td>
                                 {% endfor %}
+                                <td>
+                                    <form id="row-form-{{ row_loop.index0 }}-{{ row['id'] }}" action="{{ url_for('main.record_viewer_page') }}" method="post">
+                                        <input type="hidden" name="table" value="{{ selected_table }}">
+                                        <input type="hidden" name="page" value="{{ page }}">
+                                        <input type="hidden" name="row_id" value="{{ row['id'] }}">
+                                        <button type="submit" name="action" value="update">Save</button>
+                                        {% if is_admin %}
+                                        <button type="submit" name="action" value="delete">Delete</button>
+                                        {% endif %}
+                                    </form>
+                                </td>
                             </tr>
                             {% endfor %}
                         </tbody>

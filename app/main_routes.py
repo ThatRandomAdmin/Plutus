@@ -92,7 +92,7 @@ def upload_bank_file():
     return bank_import_controller.upload_bank_file()
 
 
-@bp.route("/record-viewer")
+@bp.route("/record-viewer", methods=["GET", "POST"])
 def record_viewer_page():
     return record_viewer_controller.record_viewer_page()
 
