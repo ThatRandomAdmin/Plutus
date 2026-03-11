@@ -19,6 +19,7 @@ BANK_FILE_FORMAT_SELECT_COLUMNS = """
 
 def add_bank_file_format(
     user_id,
+    group_code,
     format_name,
     delimiter,
     date_format,
@@ -33,8 +34,9 @@ def add_bank_file_format(
     try:
         cursor = execute(
             """
-            INSERT INTO bank_file_formats (
+            INSERT INTO "bankFileFormats" (
                 user_id,
+                group_code,
                 format_name,
                 delimiter,
                 date_format,
@@ -46,11 +48,12 @@ def add_bank_file_format(
                 credit_amount_column,
                 transaction_type_column
             )
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             RETURNING id
             """,
             (
                 user_id,
+                group_code,
                 format_name,
                 delimiter,
                 date_format,
@@ -70,39 +73,39 @@ def add_bank_file_format(
         return None
 
 
-def get_bank_file_formats_for_user(user_id):
+def get_bank_file_formats_for_group(group_code):
     try:
         return execute(
             f"""
             SELECT
 {BANK_FILE_FORMAT_SELECT_COLUMNS}
-            FROM bank_file_formats
-            WHERE user_id = %s
+            FROM "bankFileFormats"
+            WHERE group_code = %s
             ORDER BY format_name ASC, id ASC
             """,
-            (user_id,),
+            (group_code,),
         ).fetchall()
     except psycopg2.Error:
         return []
 
 
-def get_bank_file_format_by_id(user_id, bank_file_format_id):
+def get_bank_file_format_by_id(group_code, bank_file_format_id):
     try:
         return execute(
             f"""
             SELECT
 {BANK_FILE_FORMAT_SELECT_COLUMNS}
-            FROM bank_file_formats
-            WHERE user_id = %s AND id = %s
+            FROM "bankFileFormats"
+            WHERE group_code = %s AND id = %s
             """,
-            (user_id, bank_file_format_id),
+            (group_code, bank_file_format_id),
         ).fetchone()
     except psycopg2.Error:
         return None
 
 
 def update_bank_file_format(
-    user_id,
+    group_code,
     bank_file_format_id,
     format_name,
     delimiter,
@@ -118,7 +121,7 @@ def update_bank_file_format(
     try:
         cursor = execute(
             """
-            UPDATE bank_file_formats
+            UPDATE "bankFileFormats"
             SET
                 format_name = %s,
                 delimiter = %s,
@@ -130,7 +133,7 @@ def update_bank_file_format(
                 debit_amount_column = %s,
                 credit_amount_column = %s,
                 transaction_type_column = %s
-            WHERE user_id = %s AND id = %s
+            WHERE group_code = %s AND id = %s
             RETURNING id
             """,
             (
@@ -144,7 +147,7 @@ def update_bank_file_format(
                 debit_amount_column,
                 credit_amount_column,
                 transaction_type_column,
-                user_id,
+                group_code,
                 bank_file_format_id,
             ),
             commit=True,
@@ -155,15 +158,15 @@ def update_bank_file_format(
         return None
 
 
-def delete_bank_file_format(user_id, bank_file_format_id):
+def delete_bank_file_format(group_code, bank_file_format_id):
     try:
         cursor = execute(
             """
-            DELETE FROM bank_file_formats
-            WHERE user_id = %s AND id = %s
+            DELETE FROM "bankFileFormats"
+            WHERE group_code = %s AND id = %s
             RETURNING id
             """,
-            (user_id, bank_file_format_id),
+            (group_code, bank_file_format_id),
             commit=True,
         )
         row = cursor.fetchone()

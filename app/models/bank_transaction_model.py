@@ -4,8 +4,8 @@ from app.models.db import execute
 
 
 def add_bank_transaction(
-    user_id,
-    bank_file_format_id,
+    statement_id,
+    group_code,
     name,
     transaction_date,
     amount,
@@ -15,8 +15,8 @@ def add_bank_transaction(
         insert_cursor = execute(
             """
             INSERT INTO "bankTransactions" (
-                user_id,
-                bank_file_format_id,
+                statement_id,
+                group_code,
                 name,
                 transaction_date,
                 amount,
@@ -26,8 +26,8 @@ def add_bank_transaction(
             RETURNING id
             """,
             (
-                user_id,
-                bank_file_format_id,
+                statement_id,
+                group_code,
                 name,
                 transaction_date,
                 amount,

@@ -2,11 +2,16 @@ import psycopg2
 
 from app.models.db import execute
 
-def add_user(name, email, password):
+
+def add_user(name, email, password, admin=False, group_code=""):
     try:
         cursor = execute(
-            "INSERT INTO users (name, email, password) VALUES (%s, %s, %s) RETURNING id",
-            (name, email, password),
+            """
+            INSERT INTO users (name, email, password, admin, group_code)
+            VALUES (%s, %s, %s, %s, %s)
+            RETURNING id
+            """,
+            (name, email, password, admin, group_code),
             commit=True,
         )
         row = cursor.fetchone()
@@ -20,12 +25,62 @@ def add_user(name, email, password):
 def get_user_by_email(email):
     try:
         row = execute(
-            "SELECT id, name, email, password FROM users WHERE email = %s",
+            "SELECT id, name, email, password, admin, group_code FROM users WHERE email = %s",
             (email,),
         ).fetchone()
         return row
     except psycopg2.Error:
         return None
+
+
+def create_invite_link(admin_user_id, group_code, invite_token):
+    try:
+        cursor = execute(
+            """
+            INSERT INTO "groupInvites" (admin_user_id, group_code, invite_token)
+            VALUES (%s, %s, %s)
+            RETURNING id
+            """,
+            (admin_user_id, group_code, invite_token),
+            commit=True,
+        )
+        row = cursor.fetchone()
+        return row[0] if row else None
+    except psycopg2.IntegrityError:
+        return None
+    except psycopg2.Error:
+        return None
+
+
+def get_invite_link(invite_token):
+    try:
+        row = execute(
+            """
+            SELECT id, admin_user_id, group_code, invite_token, used
+            FROM "groupInvites"
+            WHERE invite_token = %s
+            """,
+            (invite_token,),
+        ).fetchone()
+        return row
+    except psycopg2.Error:
+        return None
+
+
+def use_invite_link(invite_token, used_by_user_id):
+    try:
+        cursor = execute(
+            """
+            UPDATE "groupInvites"
+            SET used = TRUE, used_by_user_id = %s, used_at = CURRENT_TIMESTAMP
+            WHERE invite_token = %s AND used = FALSE
+            """,
+            (used_by_user_id, invite_token),
+            commit=True,
+        )
+        return cursor.rowcount
+    except psycopg2.Error:
+        return 0
 
 
 def set_session_token(user_id, token):

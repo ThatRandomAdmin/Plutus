@@ -5,6 +5,7 @@ from app.models.db import execute
 
 def add_transaction(
     user_id,
+    group_code,
     name,
     transaction_date,
     amount,
@@ -16,17 +17,19 @@ def add_transaction(
             """
             INSERT INTO transactions (
                 user_id,
+                group_code,
                 name,
                 transaction_date,
                 amount,
                 transaction_type,
                 transaction_genre
             )
-            VALUES (%s, %s, %s, %s, %s, %s)
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
             RETURNING id
             """,
             (
                 user_id,
+                group_code,
                 name,
                 transaction_date,
                 amount,
