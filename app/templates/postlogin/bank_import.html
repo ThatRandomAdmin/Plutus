@@ -103,18 +103,15 @@
                 {% for format_item in manage_formats %}
                 <details class="bank-format-item">
                     <summary>{{ format_item.format_name }}</summary>
-
-                    <form class="transaction-form bank-manage-form" action="{{ url_for('main.update_bank_file_format', format_id=format_item.id) }}" method="post">
-                        <input type="hidden" name="manage_page" value="{{ manage_page }}">
-                        {{ bank_format_fields(format_item) }}
-
-                        <button type="submit">Save changes</button>
-                    </form>
-
-                    <form class="bank-delete-form" action="{{ url_for('main.delete_bank_file_format', format_id=format_item.id) }}" method="post">
-                        <input type="hidden" name="manage_page" value="{{ manage_page }}">
-                        <button type="submit">Delete format</button>
-                    </form>
+                    <p>Delimiter: {{ format_item.delimiter }}</p>
+                    <p>Date format: {{ format_item.date_format }}</p>
+                    <p>Data starts at row: {{ format_item.data_start_row }}</p>
+                    <p>Date column: {{ format_item.date_column }}</p>
+                    <p>Name column: {{ format_item.name_column }}</p>
+                    <p>Amount column: {{ format_item.amount_column or 'Not set' }}</p>
+                    <p>Debit amount column: {{ format_item.debit_amount_column or 'Not set' }}</p>
+                    <p>Credit amount column: {{ format_item.credit_amount_column or 'Not set' }}</p>
+                    <p>Transaction type column: {{ format_item.transaction_type_column or 'Not set' }}</p>
                 </details>
                 {% endfor %}
 

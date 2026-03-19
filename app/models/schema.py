@@ -75,6 +75,24 @@ SCHEMA_SQL = [
         amount NUMERIC(12,2) NOT NULL,
         transaction_type TEXT NOT NULL
     )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS "reconciledStatements" (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        statement_id INTEGER NOT NULL REFERENCES statements(id) ON DELETE CASCADE,
+        group_code TEXT NOT NULL,
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS "reconciledStatementLines" (
+        id SERIAL PRIMARY KEY,
+        reconciled_statement_id INTEGER NOT NULL REFERENCES "reconciledStatements"(id) ON DELETE CASCADE,
+        group_code TEXT NOT NULL,
+        bank_transaction_id INTEGER NOT NULL REFERENCES "bankTransactions"(id) ON DELETE CASCADE UNIQUE,
+        transaction_id INTEGER NOT NULL REFERENCES transactions(id) ON DELETE CASCADE UNIQUE
+    )
     """
 ]
 
