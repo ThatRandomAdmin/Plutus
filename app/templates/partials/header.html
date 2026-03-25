@@ -12,7 +12,7 @@
             {% if session.get('is_admin') %}
                 <a class="nav-trigger" href="{{ url_for('main.settings_page') }}">Settings</a>
             {% endif %}
-            <a class="nav-trigger" href="{{ url_for('main.logout') }}">Log out</a>
+            <a class="nav-trigger" href="{{ url_for('main.logout') }}" onclick="return confirm('Are you sure you want to log out?');">Log out</a>
         {% else %}
             <!-- Simple hover dropdowns for auth -->
             <div class="nav-menu">
