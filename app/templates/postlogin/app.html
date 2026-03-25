@@ -3,8 +3,45 @@
 {% block title %}App | Plutus{% endblock %}
 
 {% block content %}
-<section>
+<section class="transactions-shell">
     <h1>App</h1>
-    <p>You are logged in.</p>
+    <p>See your reconciliation totals and filter by statement.</p>
+
+    <section class="dashboard-tiles">
+        <article class="dashboard-tile">
+            <h2>Total unreconciled</h2>
+            <p>{{ totals.unreconciled_count }}</p>
+        </article>
+        <article class="dashboard-tile">
+            <h2>Total reconciled</h2>
+            <p>{{ totals.reconciled_count }}</p>
+        </article>
+    </section>
+
+    <form class="transaction-form" action="{{ url_for('main.app_page') }}" method="get">
+        <label for="statement-id">Statement</label>
+        <select id="statement-id" name="statement_id">
+            <option value="">All statements</option>
+            {% for statement in statements %}
+            <option value="{{ statement.id }}" {% if selected_statement and statement.id == selected_statement.id %}selected{% endif %}>
+                {{ statement.name }} ({{ statement.imported_at.strftime('%Y-%m-%d %H:%M') }})
+            </option>
+            {% endfor %}
+        </select>
+        <button type="submit">Filter</button>
+    </form>
+
+    {% if selected_statement and statement_totals %}
+    <section class="dashboard-tiles">
+        <article class="dashboard-tile">
+            <h2>Statement unreconciled</h2>
+            <p>{{ statement_totals.unreconciled_count }}</p>
+        </article>
+        <article class="dashboard-tile">
+            <h2>Statement reconciled</h2>
+            <p>{{ statement_totals.reconciled_count }}</p>
+        </article>
+    </section>
+    {% endif %}
 </section>
 {% endblock %}

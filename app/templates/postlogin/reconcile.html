@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Reconcile | Plutus{% endblock %}
+
+{% block content %}
+<section class="transactions-shell">
+    <h1>Reconcile</h1>
+    <p>Match imported bank transactions to manual transactions and save reconciled lines.</p>
+
+    <form class="transaction-form" action="{{ url_for('main.reconcile_page') }}" method="get">
+        <label for="statement-id">Statement</label>
+        <select id="statement-id" name="statement_id" required>
+            {% for statement in statements %}
+            <option value="{{ statement.id }}" {% if selected_statement and statement.id == selected_statement.id %}selected{% endif %}>
+                {{ statement.name }} ({{ statement.imported_at.strftime('%Y-%m-%d %H:%M') }})
+            </option>
+            {% endfor %}
+        </select>
+        <button type="submit">Load statement</button>
+    </form>
+
+    <section class="transaction-list">
+        <h2>Reconcile lines</h2>
+        {% if not statements %}
+        <p>No imported statements are available yet.</p>
+        {% elif not selected_statement %}
+        <p>Select a statement to begin.</p>
+        {% elif not bank_transactions %}
+        <p>This statement has no unreconciled bank transactions left.</p>
+        {% elif not manual_transactions %}
+        <p>There are no unreconciled manual transactions available.</p>
+        {% else %}
+        <form action="{{ url_for('main.reconcile_page') }}" method="post">
+            <input type="hidden" name="statement_id" value="{{ selected_statement.id }}">
+
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Bank date</th>
+                            <th>Bank name</th>
+                            <th>Amount</th>
+                            <th>Type</th>
+                            <th>Manual transaction</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for bank_transaction in bank_transactions %}
+                        <tr>
+                            <td>{{ bank_transaction.transaction_date }}</td>
+                            <td>{{ bank_transaction.name }}</td>
+                            <td>{{ bank_transaction.amount }}</td>
+                            <td>{{ bank_transaction.transaction_type }}</td>
+                            <td>
+                                <input type="hidden" name="bank_transaction_id" value="{{ bank_transaction.id }}">
+                                <select name="transaction_id">
+                                    <option value="">Leave unreconciled</option>
+                                    {% for transaction in manual_transactions %}
+                                        {% if transaction.amount == bank_transaction.amount and transaction.transaction_type == bank_transaction.transaction_type %}
+                                        <option value="{{ transaction.id }}">
+                                            {{ transaction.transaction_date }} | {{ transaction.name }} | {{ transaction.amount }}
+                                        </option>
+                                        {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <button type="submit">Save reconciled statement</button>
+        </form>
+        {% endif %}
+    </section>
+</section>
+{% endblock %}

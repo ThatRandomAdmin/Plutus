@@ -5,6 +5,7 @@ from app.controllers import (
     auth_controller,
     bank_import_controller,
     home_controller,
+    reconciliation_controller,
     record_viewer_controller,
     transaction_controller,
 )
@@ -77,19 +78,14 @@ def create_bank_file_format():
     return bank_import_controller.create_bank_file_format()
 
 
-@bp.route("/bank-import/formats/<int:format_id>/update", methods=["POST"])
-def update_bank_file_format(format_id):
-    return bank_import_controller.update_bank_file_format(format_id)
-
-
-@bp.route("/bank-import/formats/<int:format_id>/delete", methods=["POST"])
-def delete_bank_file_format(format_id):
-    return bank_import_controller.delete_bank_file_format(format_id)
-
-
 @bp.route("/bank-import/upload", methods=["POST"])
 def upload_bank_file():
     return bank_import_controller.upload_bank_file()
+
+
+@bp.route("/reconcile", methods=["GET", "POST"])
+def reconcile_page():
+    return reconciliation_controller.reconcile_page()
 
 
 @bp.route("/record-viewer", methods=["GET", "POST"])

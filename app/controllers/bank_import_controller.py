@@ -10,10 +10,8 @@ from app.models import (
     add_bank_file_format,
     add_statement,
     add_bank_transaction,
-    delete_bank_file_format as delete_bank_file_format_model,
     get_bank_file_format_by_id,
     get_bank_file_formats_for_group,
-    update_bank_file_format as update_bank_file_format_model,
 )
 from app.services import session_service
 
@@ -95,67 +93,6 @@ def create_bank_file_format():
         flash("Bank file format saved.", "success")
 
     return _redirect_to_bank_import_tab("manage-tab-panel", manage_page=1)
-
-
-def update_bank_file_format(format_id):
-    manage_page = _parse_positive_int(request.form.get("manage_page", "").strip()) or 1
-    user_id = _get_logged_in_user_id()
-    if user_id is None:
-        return redirect(url_for("main.home"))
-    group_code = session.get("group_code", "")
-
-    existing_format_row = get_bank_file_format_by_id(group_code, format_id)
-    if existing_format_row is None:
-        flash("Bank file format was not found.", "error")
-        return _redirect_to_bank_import_tab("manage-tab-panel", manage_page=manage_page)
-
-    file_format_data = _read_bank_file_format_data(request.form)
-    validation_error = _validate_bank_file_format_data(file_format_data)
-    if validation_error:
-        flash(validation_error, "error")
-        return _redirect_to_bank_import_tab("manage-tab-panel", manage_page=manage_page)
-
-    updated_id = update_bank_file_format_model(
-        group_code,
-        format_id,
-        file_format_data["format_name"],
-        file_format_data["delimiter"],
-        file_format_data["date_format"],
-        file_format_data["data_start_row"],
-        file_format_data["date_column"],
-        file_format_data["name_column"],
-        file_format_data["amount_column"],
-        file_format_data["debit_amount_column"],
-        file_format_data["credit_amount_column"],
-        file_format_data["transaction_type_column"],
-    )
-
-    if updated_id is None:
-        flash("Could not update bank file format.", "error")
-    else:
-        flash("Bank file format updated.", "success")
-
-    return _redirect_to_bank_import_tab("manage-tab-panel", manage_page=manage_page)
-
-
-def delete_bank_file_format(format_id):
-    manage_page = _parse_positive_int(request.form.get("manage_page", "").strip()) or 1
-    user_id = _get_logged_in_user_id()
-    if user_id is None:
-        return redirect(url_for("main.home"))
-    group_code = session.get("group_code", "")
-
-    deleted_id = delete_bank_file_format_model(group_code, format_id)
-
-    if deleted_id is None:
-        flash(
-            "Could not delete bank file format. It may be in use by imported statements.",
-            "error",
-        )
-    else:
-        flash("Bank file format deleted.", "success")
-
-    return _redirect_to_bank_import_tab("manage-tab-panel", manage_page=manage_page)
 
 
 def upload_bank_file():

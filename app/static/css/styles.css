@@ -232,6 +232,32 @@ footer {
     color: #475569;
 }
 
+.dashboard-tiles {
+    margin-top: 1.4rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+}
+
+.dashboard-tile {
+    background: #f8fafc;
+    border-radius: 16px;
+    box-shadow: 0 8px 20px #0f172a14;
+    padding: 1.25rem;
+}
+
+.dashboard-tile h2 {
+    font-size: 1rem;
+    color: #334155;
+}
+
+.dashboard-tile p {
+    margin-top: 0.5rem;
+    font-size: 2.4rem;
+    font-weight: 700;
+    color: #0f172a;
+}
+
 .transaction-form {
     margin-top: 1.4rem;
     background: #f8fafc;
